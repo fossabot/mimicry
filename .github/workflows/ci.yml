@@ -26,7 +26,7 @@ jobs:
     - name: Build CMake
         uses: ashutoshvarma/action-cmake-build@v1
         with:
-          build-dir: ${{ runner.workspace }}/build
+          build-dir: ${{ runner.workspace }}../../build
           # will set the CC & CXX for cmake
           cc: gcc
           cxx: g++
