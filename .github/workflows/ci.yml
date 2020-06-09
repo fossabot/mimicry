@@ -3,15 +3,21 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-  build-ubuntu:
+  build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      run: mkdir build && cd build && cmake -DCMAKE_CXX_FLAGS="-Werror" ..
-    - name: build
-      run: cmake --build build
-#     - name: test
-#       run: cd build && ctest
+    - uses: ashutoshvarma/setup-ninja@master
+      with:
+        # ninja version to download. Default: 1.10.0
+        version: 1.10.0
+    - uses: ashutoshvarma/action-cmake-build@master
+      with:
+        build-dir: ${{ runner.workspace }}/build
+        cc: gcc
+        cxx: g++
+        build-type: Release
+        
+
