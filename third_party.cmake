@@ -30,9 +30,10 @@ ExternalProject_Add(skia-project
   GIT_TAG           origin/chrome/m84
 
   SOURCE_DIR        third_party/skia/
-  PATCH_COMMAND     python tools/git-sync-deps && bin/gn gen out/config --ide=json --json-ide-script=../../gn/gn_to_cmake.py && cp ${CMAKE_SOURCE_DIR}/skia.args out/config/args.gn
+  PATCH_COMMAND     python tools/git-sync-deps && bin/gn gen out/config && cp ${CMAKE_SOURCE_DIR}/skia.args out/config/args.gn
   UPDATE_COMMAND    ""
-  SOURCE_SUBDIR     out/config
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     /usr/bin/ninja-build -C out/config
   INSTALL_COMMAND   sudo cp libskia.so /usr/local/lib/
 )
 ExternalProject_Get_Property(skia-project BINARY_DIR)
