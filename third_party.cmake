@@ -7,12 +7,9 @@ ExternalProject_Add(SDL2-project
 
   SOURCE_DIR        ${CMAKE_BINARY_DIR}/third_party/SDL2
   INSTALL_COMMAND   sudo make install -j9
-  CMAKE_ARGS        -DSDL_STATIC=OFF
-                    -DSDL_SHARED=ON 
-                    -DSDL_AUDIO=OFF 
-                    -DVIDEO_VIVANTE=ON 
-                    -DVIDEO_WAYLAND=ON 
-                    -DWAYLAND_SHARED=ON
+  CMAKE_ARGS        -D                  -D                  -D                  -D
+                    -D
+                    -D
 )
 ExternalProject_Get_Property(SDL2-project BINARY_DIR)
 ExternalProject_Get_Property(SDL2-project SOURCE_DIR)

@@ -4,20 +4,49 @@ on: [push]
 
 jobs:
   build:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
+          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
+        
 
-    runs-on: ubuntu-18.04
-    
     steps:
     - uses: actions/checkout@v1
-    - uses: ashutoshvarma/setup-ninja@master
       with:
-        # ninja version to download. Default: 1.10.0
+        ref: master
+        submodules: true
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 2.x
+
+    # - name: Install libGLES2
+    #   shell: bash
+    #   run: sudo apt-get install -y libgles2-mesa-dev
+
+    - name: Sync skia dependencies
+      working-directory: ./externals/skia
+      shell: bash
+      run: python tools/git-sync-deps
+
+    - name: Convert skia Build GN to CMake
+      working-directory: ./externals/skia
+      shell: bash
+      run: bin/gn gen out/cmake --ide=json --json-ide-script=../../gn/gn_to_cmake.py --args=' skia_use_egl= true skia_enable_gpu = false skia_use_libjpeg_turbo = false skia_use_freetype=true skia_use_zlib=false skia_use_angle = true skia_use_expat = false skia_use_icu = false skia_use_libjpeg_turbo = false skia_use_libpng = false skia_use_libwebp = false skia_use_lua = false skia_use_opencl = false skia_use_piex = false skia_use_zlib = false skia_use_metal = false skia_enable_flutter_defines = false skia_enable_fontmgr_empty = false skia_enable_pdf = false skia_enable_vulkan_debug_layers = false  skia_enable_tools = false skia_use_icu = false skia_use_sfntly = false is_debug = false is_official_build = true'
+    
+    - name: Configure CMake project
+      uses: ashutoshvarma/setup-ninja@master
+      with:
         version: 1.10.0
-    - uses: ashutoshvarma/action-cmake-build@master
+    
+    - name: Build CMake
+      uses: ashutoshvarma/action-cmake-build@master
       with:
         build-dir: ${{ runner.workspace }}/build
         cc: gcc
         cxx: g++
         build-type: Release
         
-

@@ -1,0 +1,9 @@
+set(SDL_STATIC OFF)
+set(SDL_SHARED ON)
+set(SDL_AUDIO OFF)
+set(VIDEO_VIVANTE ON)
+set(VIDEO_WAYLAND ON)
+set(WAYLAND_SHARED ON)
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
+
+add_subdirectory(skia/out/cmake EXCLUDE_FROM_ALL)
