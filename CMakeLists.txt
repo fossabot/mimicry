@@ -4,10 +4,12 @@ endif()
 
 # set compile options
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC")
+endif()
 
 # project definition
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.17)
 project(mimicry VERSION 0.0.0 DESCRIPTION "Minicry, cross-compile graphical framework")
 
 option(BUILD_LIBDEBUG "Enable building libdebug.a" ON)
