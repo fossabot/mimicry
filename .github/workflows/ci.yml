@@ -44,6 +44,11 @@ jobs:
       uses: ashutoshvarma/setup-ninja@master
       with:
         version: 1.10.0
+
+    - name: Get forgotten headers
+      working-directory: ./externals/skia
+      shell: bash
+      run: tools/install_dependencies.sh
     
     - name: Build CMake
       uses: ashutoshvarma/action-cmake-build@master
@@ -51,5 +56,6 @@ jobs:
         build-dir: ${{ runner.workspace }}/build
         cc: ${{ matrix.config.cc }}
         cxx: ${{ matrix.config.cxx }}
+        configure-options: -DSDL_STATIC=OFF -DSDL_SHARED=ON -DSDL_AUDIO=OFF -DVIDEO_VIVANTE=ON -DVIDEO_WAYLAND=ON -DWAYLAND_SHARED=ON 
         build-type: Release
         
