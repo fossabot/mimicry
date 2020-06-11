@@ -9,9 +9,25 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl", skia: "skia_use_libwebp=true skia_use_libjpeg=true skia_enable_gpu=false skia_use_freetype=true skia_use_expat=true skia_use_libpng=true skia_use_angle=true skia_use_metal=false skia_enable_flutter_defines=false skia_enable_fontmgr_empty=true skia_enable_pdf=false skia_enable_vulkan_debug_layers=false is_debug=false is_official_build=true"}
-          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++", skia: "skia_use_egl=true skia_enable_gpu=false skia_use_libjpeg_turbo=false skia_use_freetype=true skia_use_zlib=false skia_use_angle=true skia_use_expat=false skia_use_icu=false skia_use_libjpeg_turbo=false skia_use_libpng=false skia_use_libwebp=true skia_use_lua=false skia_use_opencl=false skia_use_piex=false skia_use_zlib=false skia_use_metal=false skia_enable_flutter_defines=false skia_enable_fontmgr_empty=false skia_enable_pdf=false skia_enable_vulkan_debug_layers=false  skia_enable_tools=false skia_use_icu=false skia_use_sfntly=false is_debug=false is_official_build=true"}
-          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++", skia: "skia_use_egl=true skia_enable_gpu=false skia_use_libjpeg_turbo=false skia_use_freetype=true skia_use_zlib=false skia_use_angle=false skia_use_expat=false skia_use_icu=false skia_use_libjpeg_turbo=false skia_use_libpng=false skia_use_libwebp=false skia_use_lua=false skia_use_opencl=false skia_use_piex=false skia_use_zlib=false skia_use_metal=false skia_enable_flutter_defines=false skia_enable_fontmgr_empty=false skia_enable_pdf=false skia_enable_vulkan_debug_layers=false  skia_enable_tools=false skia_use_icu=false skia_use_sfntly=false is_debug=false is_official_build=true" }
+          # - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl", skia: "skia_use_libwebp=true skia_use_libjpeg=true skia_enable_gpu=false skia_use_freetype=true skia_use_expat=true skia_use_libpng=true skia_use_angle=true skia_use_metal=false skia_enable_flutter_defines=false skia_enable_fontmgr_empty=true skia_enable_pdf=false skia_enable_vulkan_debug_layers=false is_debug=false is_official_build=true"}
+          - { 
+              name: "Ubuntu gcc", 
+              os: ubuntu-latest, 
+              cc: "gcc", 
+              cxx: "g++"
+            }
+          - { 
+              name: "Ubuntu clang", 
+              os: ubuntu-latest, 
+              cc: "clang", 
+              cxx: "clang++"
+            }
+          - { 
+              name: "MacOS clang", 
+              os: macos-latest, 
+              cc: "clang", 
+              cxx: "clang++"
+            }
         
 
     steps:
@@ -25,33 +41,27 @@ jobs:
       with:
         python-version: 2.x
 
-    - name: Install skia dependencies for "Ubuntu gcc"
-      if: startsWith(matrix.config.os, 'ubuntu-latest')
+    - name: Install skia dependencies for Linux
+      # if: startsWith(matrix.config.os, 'ubuntu-latest')
       working-directory: ./externals/skia
       shell: bash
       run: tools/install_dependencies.sh
-        
+
     - name: Sync skia third party dependencies
       working-directory: ./externals/skia
       shell: bash
       run: python tools/git-sync-deps
 
-    - name: Install skia toolchain for "Windows MSVC"
-      if: startsWith(matrix.config.os, 'windows-latest')
-      working-directory: ./externals/skia
-      shell: bash
-      run:  python infra/bots/assets/win_toolchain/download.py -t C:/toolchain
-      
     - name: Convert skia Build GN to CMake
       working-directory: ./externals/skia
       shell: bash
-      run: bin/gn gen out/cmake --ide=json --json-ide-script=../../gn/gn_to_cmake.py --args='${{ matrix.config.skia }} win_vc="C:\toolchain\VC" win_sdk="C:\toolchain\win_sdk"'
-    
+      run: bin/gn gen out/cmake --ide=json --json-ide-script=../../gn/gn_to_cmake.py --args='skia_use_egl=true skia_enable_gpu=false skia_use_libjpeg_turbo=false skia_use_freetype=true skia_use_zlib=false skia_use_angle=true  skia_use_expat=false skia_use_icu=false skia_use_libpng=false skia_use_libwebp=true  skia_use_lua=false skia_use_opencl=false skia_use_piex=false skia_use_zlib=false skia_use_metal=false skia_enable_flutter_defines=false skia_enable_fontmgr_empty=false skia_enable_pdf=false skia_enable_vulkan_debug_layers=false  skia_enable_tools=false skia_use_icu=false skia_use_sfntly=false is_debug=false is_official_build=true is_component_build=true cc="clang" cxx="clang++"'
+
     - name: Setup Ninja build
       uses: ashutoshvarma/setup-ninja@master
       with:
         version: 1.10.0
-    
+
     - name: Build CMake
       uses: ashutoshvarma/action-cmake-build@master
       with:
