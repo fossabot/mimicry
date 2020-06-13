@@ -38,7 +38,6 @@ target_include_directories(
   ${PROJECT_NAME} 
   PRIVATE 
   externals/skia
-  externals/skia/include/core
   externals/SDL/include
 )
 

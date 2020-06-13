@@ -6,17 +6,12 @@
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkColorSpace.h"
 
-// #include "debug/debug.h"
-
-#include "iostream"
-
 #define WIDTH 640
 #define HEIGHT 480
 
 static SDL_Texture *texture; // even with SDL2, we can still bring ancient code back
 static SDL_Window *window;
 static SDL_Renderer *renderer;
-Uint32 timeout;
 
 int main ( int argc, char *argv[] )
 {
@@ -37,6 +32,7 @@ int main ( int argc, char *argv[] )
 	SkBitmap bitmap;
 	SkImageInfo ii = SkImageInfo::Make(WIDTH, HEIGHT*2, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
 	bitmap.allocPixels(ii, ii.minRowBytes());
+
 	SkCanvas* canvas = new SkCanvas(bitmap);
 
 	SkPaint paint;
@@ -60,45 +56,8 @@ int main ( int argc, char *argv[] )
 	int mY = 0;
 	int x = refX + mX;
 	int y = refY + mY;
-	int aux = 0;
-	int numFrames = 0;
-  	Uint32 startTime = SDL_GetTicks();
 	while (true)
 	{
-		++numFrames;
-    	Uint32 elapsedMS = SDL_GetTicks() - startTime; // Time since start of loop
-		
-		SDL_Event event;
-		/* look for an event */
-		if (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
-				exit(0);
-			} else if (event.type == SDL_MOUSEWHEEL) {
-				if(event.wheel.y == -1) {
-					y += 10;
-				} else if (event.wheel.y == 1) {
-					y -= 10;
-				}
-			} else if (event.type == SDL_FINGERUP) {
-				y += 10;
-			} else if (event.type == SDL_FINGERDOWN) {
-				y -= 10;
-			} else if (event.type == SDL_MOUSEMOTION) {
-
-				if (event.motion.state == SDL_PRESSED) {
-					aux = mY;
-					mY =  event.motion.y;
-					refY = (aux - mY) + refY;
-				}
-			}
-			
-		}
-
-		canvas->clear(SK_ColorYELLOW);
-
-		SkString text("Scroll PoC");
-
-		// Draw a round rectangle
 		SkRect rect;
 		canvas->drawRoundRect(rect, 20, 20, paint);
         // Draw a oval form
@@ -117,14 +76,8 @@ int main ( int argc, char *argv[] )
 		SDL_RenderCopy(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
-
-        if (elapsedMS) { // Skip this the first frame
-      		double elapsedSeconds = elapsedMS / 1000.0; // Convert to seconds
-      		double fps = numFrames / elapsedSeconds; // FPS is Frames / Seconds
-      		std::cout << fps << std::endl; 
-    	}
    		
-		SDL_Delay(1.0/60.0); // Use floating point division, not integer
+		SDL_Delay(60.0); // Use floating point division, not integer
 	}
 
 	/* cleanup SDL */

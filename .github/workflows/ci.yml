@@ -28,7 +28,6 @@ jobs:
               cc: "clang", 
               cxx: "clang++"
             }
-        
 
     steps:
     - name: Checkout! 
@@ -70,4 +69,12 @@ jobs:
         cxx: ${{ matrix.config.cxx }}
         configure-options: -DSDL_STATIC=OFF -DSDL_SHARED=ON -DSDL_AUDIO=OFF
         build-type: Release
-        
+
+    - name: Compressing artifacts
+      run: zip -r build.zip build
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.config.os }}-build-${{ matrix.config.cc }}
+        path: build
