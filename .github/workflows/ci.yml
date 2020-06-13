@@ -64,7 +64,7 @@ jobs:
     - name: Build CMake
       uses: ashutoshvarma/action-cmake-build@master
       with:
-        build-dir: ${{ runner.workspace }}/build
+        build-dir: ./build
         cc: ${{ matrix.config.cc }}
         cxx: ${{ matrix.config.cxx }}
         configure-options: -DSDL_STATIC=OFF -DSDL_SHARED=ON -DSDL_AUDIO=OFF
